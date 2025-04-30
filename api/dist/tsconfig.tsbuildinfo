@@ -1,0 +1,1 @@
+{"root":["../src/index.ts","../src/controller/usercontroller.ts","../src/controller/ejscontroller.ts","../src/controller/usuariocontroller.ts","../src/db/app.ts","../src/model/ej.ts","../src/model/serve.ts","../src/model/usuario.ts","../src/routes/router.ts"],"errors":true,"version":"5.8.2"}
