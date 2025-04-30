@@ -1,70 +1,69 @@
-import { Request, Response } from 'express';
+import { Request, RequestHandler, Response } from 'express';
 import Carrito from '../model/carrito';
 
 class CarritoController {
-  // Crear un nuevo carrito
-  public async crearCarrito(req: Request, res: Response): Promise<Response> {
+  static crearCarrito: RequestHandler = async (req, res): Promise<void> => {
     try {
       const carrito = await Carrito.create(req.body);
-      return res.status(201).json(carrito);
+      res.status(201).json(carrito);
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      res.status(500).json({ message: 'Error al crear el carrito', error });
     }
-  }
+  };
 
   // Obtener todos los carritos
-  public async obtenerCarritos(req: Request, res: Response): Promise<Response> {
+  static obtenerCarritos: RequestHandler = async (req, res): Promise<void> => {
     try {
       const carritos = await Carrito.findAll();
-      return res.status(200).json(carritos);
+      res.status(200).json(carritos);
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      res.status(500).json({ message: 'Error al obtener los carritos', error });
     }
-  }
+  };
 
   // Obtener un carrito por ID
-  public async obtenerCarritoPorId(req: Request, res: Response): Promise<Response> {
+  static obtenerCarritoPorId: RequestHandler = async (req, res): Promise<void> => {
     try {
       const carrito = await Carrito.findByPk(req.params.id);
-      if (carrito) {
-        return res.status(200).json(carrito);
+      if (!carrito) {
+        res.status(404).json({ message: 'Carrito no encontrado' });
+        return;
       }
-      return res.status(404).json({ message: 'Carrito no encontrado' });
+      res.status(200).json(carrito);
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      res.status(500).json({ message: 'Error al obtener el carrito', error });
     }
-  }
+  };
 
-  // Actualizar un carrito
-  public async actualizarCarrito(req: Request, res: Response): Promise<Response> {
+  // Actualizar un carrito por ID
+  static actualizarCarrito: RequestHandler = async (req, res): Promise<void> => {
     try {
-      const [updated] = await Carrito.update(req.body, {
-        where: { id: req.params.id },
-      });
-      if (updated) {
-        const updatedCarrito = await Carrito.findByPk(req.params.id);
-        return res.status(200).json(updatedCarrito);
+      const carrito = await Carrito.findByPk(req.params.id);
+      if (!carrito) {
+        res.status(404).json({ message: 'Carrito no encontrado' });
+        return;
       }
-      return res.status(404).json({ message: 'Carrito no encontrado' });
+      await carrito.update(req.body);
+      res.status(200).json(carrito);
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      res.status(500).json({ message: 'Error al actualizar el carrito', error });
     }
-  }
+  };
 
-  // Eliminar un carrito
-  public async eliminarCarrito(req: Request, res: Response): Promise<Response> {
+  // Eliminar un carrito por ID
+  static eliminarCarrito: RequestHandler = async (req, res): Promise<void> => {
     try {
-      const deleted = await Carrito.destroy({
-        where: { id: req.params.id },
-      });
-      if (deleted) {
-        return res.status(204).send();
+      const carrito = await Carrito.findByPk(req.params.id);
+      if (!carrito) {
+        res.status(404).json({ message: 'Carrito no encontrado' });
+        return;
       }
-      return res.status(404).json({ message: 'Carrito no encontrado' });
+      await carrito.destroy();
+      res.status(200).json({ message: 'Carrito eliminado' });
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      res.status(500).json({ message: 'Error al eliminar el carrito', error });
     }
-  }
+  };
 }
 
-export default new CarritoController();
+export default CarritoController;

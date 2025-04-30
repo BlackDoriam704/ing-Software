@@ -1,70 +1,76 @@
-import { Request, Response } from 'express';
-import { Pedido } from '../model/pedido';
+import { RequestHandler } from 'express';
+import Pedido from '../model/pedido';
 
 class PedidoController {
   // Crear un nuevo pedido
-  public async create(req: Request, res: Response): Promise<Response> {
+  static create: RequestHandler = async (req, res): Promise<void> => {
     try {
-      const pedido = await Pedido.create(req.body);
-      return res.status(201).json(pedido);
+      const { usuarioId, fechaCreacion, estado } = req.body;
+      const pedido = await Pedido.create({ usuarioId, fechaCreacion, estado });
+      res.status(201).json(pedido);
     } catch (error) {
-      return res.status(500).json({ message: 'Error creando el pedido', error });
+      res.status(500).json({ message: 'Error creando el pedido', error });
     }
-  }
+  };
 
   // Obtener todos los pedidos
-  public async getAll(req: Request, res: Response): Promise<Response> {
+  static getAll: RequestHandler = async (req, res): Promise<void> => {
     try {
       const pedidos = await Pedido.findAll();
-      return res.status(200).json(pedidos);
+      res.status(200).json(pedidos);
     } catch (error) {
-      return res.status(500).json({ message: 'Error obteniendo los pedidos', error });
+      res.status(500).json({ message: 'Error obteniendo los pedidos', error });
     }
-  }
+  };
 
   // Obtener un pedido por ID
-  public async getById(req: Request, res: Response): Promise<Response> {
+  static getById: RequestHandler = async (req, res): Promise<void> => {
     try {
       const pedido = await Pedido.findByPk(req.params.id);
       if (pedido) {
-        return res.status(200).json(pedido);
+        res.status(200).json(pedido);
+      } else {
+        res.status(404).json({ message: 'Pedido no encontrado' });
       }
-      return res.status(404).json({ message: 'Pedido no encontrado' });
     } catch (error) {
-      return res.status(500).json({ message: 'Error obteniendo el pedido', error });
+      res.status(500).json({ message: 'Error obteniendo el pedido', error });
     }
-  }
+  };
 
   // Actualizar un pedido
-  public async update(req: Request, res: Response): Promise<Response> {
+  static update: RequestHandler = async (req, res): Promise<void> => {
     try {
-      const [updated] = await Pedido.update(req.body, {
-        where: { id: req.params.id },
-      });
+      const { usuarioId, fechaCreacion, estado } = req.body;
+      const [updated] = await Pedido.update(
+        { usuarioId, fechaCreacion, estado },
+        { where: { id: req.params.id } }
+      );
       if (updated) {
         const updatedPedido = await Pedido.findByPk(req.params.id);
-        return res.status(200).json(updatedPedido);
+        res.status(200).json(updatedPedido);
+      } else {
+        res.status(404).json({ message: 'Pedido no encontrado' });
       }
-      return res.status(404).json({ message: 'Pedido no encontrado' });
     } catch (error) {
-      return res.status(500).json({ message: 'Error actualizando el pedido', error });
+      res.status(500).json({ message: 'Error actualizando el pedido', error });
     }
-  }
+  };
 
   // Eliminar un pedido
-  public async delete(req: Request, res: Response): Promise<Response> {
+  static delete: RequestHandler = async (req, res): Promise<void> => {
     try {
       const deleted = await Pedido.destroy({
         where: { id: req.params.id },
       });
       if (deleted) {
-        return res.status(204).send();
+        res.status(204).send();
+      } else {
+        res.status(404).json({ message: 'Pedido no encontrado' });
       }
-      return res.status(404).json({ message: 'Pedido no encontrado' });
     } catch (error) {
-      return res.status(500).json({ message: 'Error eliminando el pedido', error });
+      res.status(500).json({ message: 'Error eliminando el pedido', error });
     }
-  }
+  };
 }
 
-export default new PedidoController();
+export default PedidoController;

@@ -1,37 +1,40 @@
-import { Request, Response } from 'express';
+import { Request, Response,RequestHandler } from 'express';
 import ItemCarrito from '../model/item_carrito';
 
 class ItemCarritoController {
-  public async agregarItem(req: Request, res: Response): Promise<Response> {
+  static agregarItem: RequestHandler = async (req, res): Promise<void> => {
     try {
       const nuevoItem = await ItemCarrito.create(req.body);
-      return res.status(201).json(nuevoItem);
+      res.status(201).json(nuevoItem);
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error instanceof Error ? error.message : 'Error desconocido' });
     }
-  }
+  };
 
-  public async obtenerItems(req: Request, res: Response): Promise<Response> {
+  // Obtener todos los items del carrito
+  static obtenerItems: RequestHandler = async (req, res): Promise<void> => {
     try {
       const items = await ItemCarrito.findAll();
-      return res.status(200).json(items);
+      res.status(200).json(items);
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error instanceof Error ? error.message : 'Error desconocido' });
     }
-  }
+  };
 
-  public async eliminarItem(req: Request, res: Response): Promise<Response> {
+  // Eliminar un item del carrito por ID
+  static eliminarItem: RequestHandler = async (req, res): Promise<void> => {
     try {
       const { id } = req.params;
       const item = await ItemCarrito.destroy({ where: { id } });
       if (item) {
-        return res.status(204).send();
+        res.status(204).send();
+      } else {
+        res.status(404).json({ error: 'Item no encontrado' });
       }
-      return res.status(404).json({ error: 'Item no encontrado' });
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error instanceof Error ? error.message : 'Error desconocido' });
     }
-  }
+  };
 }
 
-export default new ItemCarritoController();
+export default ItemCarritoController;

@@ -1,65 +1,72 @@
-import { Request, Response } from 'express';
+import { Request, Response, RequestHandler } from 'express';
 import Categoria from '../model/categoria';
 
 class CategoriaController {
-  public async create(req: Request, res: Response): Promise<Response> {
+  static create: RequestHandler = async (req, res): Promise<void> => {
     try {
       const categoria = await Categoria.create(req.body);
-      return res.status(201).json(categoria);
+      res.status(201).json(categoria);
     } catch (error) {
-      return res.status(500).json({ message: 'Error creating category', error });
+      res.status(500).json({ message: 'Error al crear la categoría', error });
     }
-  }
+  };
 
-  public async getAll(req: Request, res: Response): Promise<Response> {
+  // Obtener todas las categorías
+  static getAll: RequestHandler = async (req, res): Promise<void> => {
     try {
       const categorias = await Categoria.findAll();
-      return res.status(200).json(categorias);
+      res.status(200).json(categorias);
     } catch (error) {
-      return res.status(500).json({ message: 'Error fetching categories', error });
+      res.status(500).json({ message: 'Error al obtener las categorías', error });
     }
-  }
+  };
 
-  public async getById(req: Request, res: Response): Promise<Response> {
+  // Obtener una categoría por ID
+  static getById: RequestHandler = async (req, res): Promise<void> => {
     try {
       const categoria = await Categoria.findByPk(req.params.id);
       if (categoria) {
-        return res.status(200).json(categoria);
+        res.status(200).json(categoria);
+      } else {
+        res.status(404).json({ message: 'Categoría no encontrada' });
       }
-      return res.status(404).json({ message: 'Category not found' });
     } catch (error) {
-      return res.status(500).json({ message: 'Error fetching category', error });
+      res.status(500).json({ message: 'Error al obtener la categoría', error });
     }
-  }
+  };
 
-  public async update(req: Request, res: Response): Promise<Response> {
+  // Actualizar una categoría por ID
+  static update: RequestHandler = async (req, res): Promise<void> => {
     try {
       const [updated] = await Categoria.update(req.body, {
         where: { id: req.params.id },
       });
       if (updated) {
         const updatedCategoria = await Categoria.findByPk(req.params.id);
-        return res.status(200).json(updatedCategoria);
+        res.status(200).json(updatedCategoria);
+      } else {
+        res.status(404).json({ message: 'Categoría no encontrada' });
       }
-      return res.status(404).json({ message: 'Category not found' });
     } catch (error) {
-      return res.status(500).json({ message: 'Error updating category', error });
+      res.status(500).json({ message: 'Error al actualizar la categoría', error });
     }
-  }
+  };
 
-  public async delete(req: Request, res: Response): Promise<Response> {
+  // Eliminar una categoría por ID
+  static delete: RequestHandler = async (req, res): Promise<void> => {
     try {
       const deleted = await Categoria.destroy({
         where: { id: req.params.id },
       });
       if (deleted) {
-        return res.status(204).send();
+        res.status(204).send();
+      } else {
+        res.status(404).json({ message: 'Categoría no encontrada' });
       }
-      return res.status(404).json({ message: 'Category not found' });
     } catch (error) {
-      return res.status(500).json({ message: 'Error deleting category', error });
+      res.status(500).json({ message: 'Error al eliminar la categoría', error });
     }
-  }
+  };
 }
 
-export default new CategoriaController();
+export default CategoriaController;

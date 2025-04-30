@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
-import userRoutes from '../../../backend/src/routes/router'; // Asegúrate de que la ruta sea correcta
+import userRoutes from '../../../api/src/routes/router'; // Asegúrate de que la ruta sea correcta
 
 class Serve {
   private app: express.Application;

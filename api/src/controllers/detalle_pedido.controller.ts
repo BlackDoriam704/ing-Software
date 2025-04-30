@@ -1,68 +1,75 @@
-import { Request, Response } from 'express';
+import { Request, Response, RequestHandler} from 'express';
 import DetallePedido from '../model/detalle_pedido';
 
 class DetallePedidoController {
-  public async create(req: Request, res: Response): Promise<Response> {
+  static create: RequestHandler = async (req, res): Promise<void> => {
     try {
       const detallePedido = await DetallePedido.create(req.body);
-      return res.status(201).json(detallePedido);
+      res.status(201).json(detallePedido);
     } catch (error) {
-      return res.status(500).json({ message: 'Error creating detalle pedido', error });
+      res.status(500).json({ message: 'Error al crear el detalle del pedido', error });
     }
-  }
+  };
 
-  public async getAll(req: Request, res: Response): Promise<Response> {
+  // Obtener todos los detalles de pedido
+  static getAll: RequestHandler = async (req, res): Promise<void> => {
     try {
       const detallesPedido = await DetallePedido.findAll();
-      return res.status(200).json(detallesPedido);
+      res.status(200).json(detallesPedido);
     } catch (error) {
-      return res.status(500).json({ message: 'Error fetching detalles pedido', error });
+      res.status(500).json({ message: 'Error al obtener los detalles del pedido', error });
     }
-  }
+  };
 
-  public async getById(req: Request, res: Response): Promise<Response> {
+  // Obtener un detalle de pedido por ID
+  static getById: RequestHandler = async (req, res): Promise<void> => {
     const { id } = req.params;
     try {
       const detallePedido = await DetallePedido.findByPk(id);
       if (!detallePedido) {
-        return res.status(404).json({ message: 'Detalle pedido not found' });
+        res.status(404).json({ message: 'Detalle del pedido no encontrado' });
+        return;
       }
-      return res.status(200).json(detallePedido);
+      res.status(200).json(detallePedido);
     } catch (error) {
-      return res.status(500).json({ message: 'Error fetching detalle pedido', error });
+      res.status(500).json({ message: 'Error al obtener el detalle del pedido', error });
     }
-  }
+  };
 
-  public async update(req: Request, res: Response): Promise<Response> {
+  // Actualizar un detalle de pedido por ID
+  static update: RequestHandler = async (req, res): Promise<void> => {
     const { id } = req.params;
     try {
       const [updated] = await DetallePedido.update(req.body, {
         where: { id },
       });
       if (!updated) {
-        return res.status(404).json({ message: 'Detalle pedido not found' });
+        res.status(404).json({ message: 'Detalle del pedido no encontrado' });
+        return;
       }
       const updatedDetallePedido = await DetallePedido.findByPk(id);
-      return res.status(200).json(updatedDetallePedido);
+      res.status(200).json(updatedDetallePedido);
     } catch (error) {
-      return res.status(500).json({ message: 'Error updating detalle pedido', error });
+      res.status(500).json({ message: 'Error al actualizar el detalle del pedido', error });
     }
-  }
+  };
 
-  public async delete(req: Request, res: Response): Promise<Response> {
+  // Eliminar un detalle de pedido por ID
+  static delete: RequestHandler = async (req, res): Promise<void> => {
     const { id } = req.params;
     try {
       const deleted = await DetallePedido.destroy({
         where: { id },
       });
       if (!deleted) {
-        return res.status(404).json({ message: 'Detalle pedido not found' });
+        res.status(404).json({ message: 'Detalle del pedido no encontrado' });
+        return;
       }
-      return res.status(204).send();
+      res.status(204).send();
     } catch (error) {
-      return res.status(500).json({ message: 'Error deleting detalle pedido', error });
+      res.status(500).json({ message: 'Error al eliminar el detalle del pedido', error });
     }
-  }
+  };
 }
 
 export default DetallePedidoController;
