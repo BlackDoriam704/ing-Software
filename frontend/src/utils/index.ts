@@ -1,0 +1,1 @@
+// Este archivo contiene funciones de utilidad para el frontend.

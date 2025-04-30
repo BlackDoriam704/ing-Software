@@ -1,0 +1,1 @@
+// Este archivo contiene definiciones de tipos para el proyecto frontend.
